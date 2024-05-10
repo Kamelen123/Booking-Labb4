@@ -1,5 +1,7 @@
 
 using Booking_Labb4.Data;
+using Booking_Labb4.Repository;
+using Booking_Labb4.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Booking_Labb4
@@ -16,6 +18,10 @@ namespace Booking_Labb4
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            //My What ever we call this
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            builder.Services.AddScoped<ICompany, CompanyRepository>();
 
             //EF till SQL
             builder.Services.AddDbContext<AppDbContext>(options =>
