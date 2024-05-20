@@ -1,4 +1,6 @@
-﻿using Booking_Labb4.Data;
+﻿using AutoMapper;
+using Booking_Labb4.Data;
+using Booking_Labb4.Data.Dto;
 using Booking_Labb4.Services;
 using BookingModels;
 using Microsoft.EntityFrameworkCore;
@@ -8,9 +10,12 @@ namespace Booking_Labb4.Repository
     public class CompanyRepository : ICompany
     {
         private AppDbContext _appDbContext;
-        public CompanyRepository(AppDbContext appDbContext)
+        private readonly IMapper _mapper;
+        public CompanyRepository(AppDbContext appDbContext, IMapper mapper)
         {
             _appDbContext = appDbContext;
+            _mapper = mapper;
+
         }
         public async Task<Company> Add(Company newEntity)
         {
@@ -42,6 +47,17 @@ namespace Booking_Labb4.Repository
             return await _appDbContext.Companies.FirstOrDefaultAsync(c => c.CompanyId == id);
         }
 
+        public async Task<IEnumerable<Appointment>> Search(DateOnly date)
+        {
+            //return await _appDbContext.Appointments.Where(d => d.Date == date).ToListAsync();
+            IQueryable<Appointment> qury = _appDbContext.Appointments;
+            if (!(qury == null))
+            {
+                qury = qury.Where(d => d.Date == date);
+            }
+            return await qury.ToListAsync();
+        }
+
         public async Task<Company> Update(Company entity)
         {
             var result = await _appDbContext.Companies.
@@ -57,5 +73,41 @@ namespace Booking_Labb4.Repository
             }
             return null;
         }
+        public async Task<IEnumerable<Appointment>> SearchByCompanyIdAndMonth(int companyId, int year, int month)
+        {
+
+            //return await _appDbContext.Appointments
+            //    .Where(a => a.CompanyId == companyId && a.Date.Year == year && a.Date.Month == month)
+            //    .ToListAsync();
+            return await _appDbContext.Appointments
+            .Include(a => a.Customer) 
+            .Where(a => a.CompanyId == companyId && a.Date.Year == year && a.Date.Month == month)
+            .ToListAsync();
+        }
+
+        public async Task<IEnumerable<CompanyAppointmentDto>> Test(int companyId, int year, int month)
+        {
+            var appointments = await SearchByCompanyIdAndMonth(companyId, year, month);
+
+            if (!appointments.Any())
+            {
+                return new List<CompanyAppointmentDto>();
+            }
+
+            //var appointmentDtos = appointments.Select(a => new CompanyAppointmentDto
+            //{
+            //    AppointmentId = a.AppointmentId,
+            //    CompanyNotes = a.CompanyNotes,
+            //    CompanyId = a.CompanyId,
+            //    FirstName = a.Customer.FirstName, 
+            //    Date = a.Date,
+            //    TimeFrom = a.TimeFrom,
+            //    TimeTo = a.TimeTo
+            //}).ToList();
+            var appointmentDtos = _mapper.Map<IEnumerable<CompanyAppointmentDto>>(appointments);
+
+            return appointmentDtos;
+        }
     }
+    
 }

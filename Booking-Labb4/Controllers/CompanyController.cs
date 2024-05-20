@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using Booking_Labb4.Data.Dto;
+using Booking_Labb4.Repository;
 using Booking_Labb4.Services;
 using BookingModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 
 namespace Booking_Labb4.Controllers
 {
@@ -35,8 +38,7 @@ namespace Booking_Labb4.Controllers
                    "Error to get Data from Database.......");
             }
         }
-        [HttpGet("{CompanyId}")]
-
+        [HttpGet("GetCompanyById/{CompanyId}")]
         public async Task<IActionResult> GetCompany(int CompanyId)
         {
             try
@@ -73,7 +75,7 @@ namespace Booking_Labb4.Controllers
                 // Map the created entity back to DTO
                 var createdCompanyDto = _mapper.Map<CompanyDto>(createdCompany);
 
-                return CreatedAtAction(nameof(GetCompany), new { CompanyId = createdCompanyDto.CompanyId }, createdCompanyDto);
+                return CreatedAtAction(nameof(GetCompany), new { createdCompanyDto.CompanyId }, createdCompanyDto);
             }
             catch (Exception)
             {
@@ -130,6 +132,40 @@ namespace Booking_Labb4.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "Error Occurred when Trying to Update data in Database...");
             }
+        }
+        [HttpGet("date")]
+        public async Task<IActionResult> GetAllByDate([FromQuery] string date)
+        {
+            if (!DateOnly.TryParse(date, out var parsedDate))
+            {
+                return BadRequest("Invalid date format. Please use 'yyyy-MM-dd'.");
+            }
+
+            var result = await _company.Search(parsedDate);
+
+            if (!result.Any())
+            {
+                return NotFound("Not Found");
+            }
+
+            return Ok(result);
+        }
+        [HttpGet("{companyId}/appointmentsByDate")]
+        public async Task<IActionResult> GetAppointmentsByCompanyIdAndMonth([FromRoute] int companyId, [FromQuery] int year, [FromQuery] int month)
+        {
+            if (companyId <= 0 || year <= 0 || month <= 0 || month > 12)
+            {
+                return BadRequest("Invalid company ID, year, or month.");
+            }
+
+            var appointmentDtos = await _company.Test(companyId, year, month);
+
+            if (!appointmentDtos.Any())
+            {
+                return NotFound("No appointments found for the specified company ID and month.");
+            }
+
+            return Ok(appointmentDtos);
         }
     }
 }

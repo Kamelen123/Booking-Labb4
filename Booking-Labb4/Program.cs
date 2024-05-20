@@ -1,4 +1,5 @@
 
+using Booking_Labb4.Converter;
 using Booking_Labb4.Data;
 using Booking_Labb4.Repository;
 using Booking_Labb4.Services;
@@ -20,8 +21,15 @@ namespace Booking_Labb4
             builder.Services.AddSwaggerGen();
 
             //My What ever we call this
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new DateOnlyConverter());
+                options.JsonSerializerOptions.Converters.Add(new TimeOnlyConverter());
+            });
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddScoped<ICompany, CompanyRepository>();
+            builder.Services.AddScoped<ICustomer, CustomerRepository>();
+            builder.Services.AddScoped<IAppointment, AppointmentRepository>();
 
             //EF till SQL
             builder.Services.AddDbContext<AppDbContext>(options =>
