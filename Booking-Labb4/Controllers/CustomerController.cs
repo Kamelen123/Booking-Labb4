@@ -130,5 +130,56 @@ namespace Booking_Labb4.Controllers
                     "Error Occurred when Trying to Update data in Database...");
             }
         }
+        [HttpGet("AppointmentInfo")]
+        public async Task<IActionResult> GetCustomerAppointments([FromQuery] int customerId)
+        {
+            if (customerId ==null)
+            {
+                return BadRequest("Invalid customer ID, year, or month.");
+            }
+
+            var customerInfo = await _customer.CustomerAppointmentInfo(customerId);
+
+            if (!customerInfo.Any())
+            {
+                return NotFound("No appointments found for the specified customer ID.");
+            }
+
+            return Ok(customerInfo);
+        }
+        [HttpGet("CustomerBookingsByDate")]
+        public async Task<IActionResult> GetAppointmentsByMonth([FromQuery] int year, [FromQuery] int month)
+        {
+            if (year <= 0 || month <= 0 || month > 12)
+            {
+                return BadRequest("Invalid year or month.");
+            }
+
+            var customerList = await _customer.SearchByMonth(year, month);
+
+            if (!customerList.Any())
+            {
+                return NotFound("No appointments found for the specified month.");
+            }
+
+            return Ok(customerList);
+        }
+        [HttpGet("{customerId}/HoursPerMonth")]
+        public async Task<IActionResult> GetHours([FromRoute] int customerId, [FromQuery] int year, [FromQuery] int month)
+        {
+            if ( customerId <= 0|| year <= 0 || month <= 0 || month > 12)
+            {
+                return BadRequest("Invalid customer ID, year or month.");
+            }
+
+            var customer = await _customer.GetCustomerHours(customerId, year, month);
+
+            if (customer ==null)
+            {
+                return NotFound("No appointments found for the specified month.");
+            }
+
+            return Ok(customer);
+        }
     }
 }

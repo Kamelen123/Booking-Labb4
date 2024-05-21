@@ -1,23 +1,40 @@
-﻿using Booking_Labb4.Data;
+﻿using AutoMapper;
+using Booking_Labb4.Data;
+using Booking_Labb4.Data.Dto;
 using Booking_Labb4.Services;
 using BookingModels;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.Design;
 
 namespace Booking_Labb4.Repository
 {
     public class CustomerRepository : ICustomer
     {
         private AppDbContext _appDbContext;
+        private readonly IMapper _mapper;
 
-        public CustomerRepository(AppDbContext appDbContext)
+        public CustomerRepository(AppDbContext appDbContext, IMapper mapper)
         {
             _appDbContext = appDbContext;
+            _mapper = mapper;
         }
         public async Task<Customer> Add(Customer newEntity)
         {
             var result = await _appDbContext.Customers.AddAsync(newEntity);
             await _appDbContext.SaveChangesAsync();
             return result.Entity;
+
+        }
+
+        public async Task<IEnumerable<CustomerBookingDTO>> CustomerAppointmentInfo(int customerId)
+        {
+            var customerinfo = await GetAppointment(customerId);
+            if (!customerinfo.Any())
+            {
+                return new List<CustomerBookingDTO>();
+            }
+            var customerAppointmentDtos = _mapper.Map<IEnumerable<CustomerBookingDTO>>(customerinfo);
+            return customerAppointmentDtos;
 
         }
 
@@ -37,6 +54,15 @@ namespace Booking_Labb4.Repository
         public async Task<IEnumerable<Customer>> GetAll()
         {
             return await _appDbContext.Customers.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Appointment>> GetAppointment(int customerId)
+        {
+            return await _appDbContext.Appointments
+            .Include(a => a.Company)
+            .Include(a => a.Customer)
+            .Where(a => a.CustomerId == customerId)
+            .ToListAsync();
         }
 
         public async Task<Customer> GetSingel(int id)
@@ -60,6 +86,35 @@ namespace Booking_Labb4.Repository
                 return result;
             }
             return null;
+        }
+
+        public async Task<IEnumerable<CustomerBookingDTO>> SearchByMonth(int year, int month)
+        {
+            var customerAppointments = await _appDbContext.Appointments
+            .Include(a => a.Company)
+            .Include(a => a.Customer)
+            .Where(a => a.Date.Year == year && a.Date.Month == month)
+            .ToListAsync();
+
+            if (!customerAppointments.Any())
+            {
+                return new List<CustomerBookingDTO>();
+            }
+
+            var customerBookingDtos = _mapper.Map<IEnumerable<CustomerBookingDTO>>(customerAppointments);
+
+            return customerBookingDtos;
+        }
+        public async Task<double> GetCustomerHours(int customerId, int year, int month)
+        {
+            
+            var customerBookingDtos = await SearchByMonth(year, month);
+
+            var filteredAppointments = customerBookingDtos.Where(a => a.CustomerId == customerId);
+            
+            double totalHours = filteredAppointments.Sum(a => (a.TimeTo - a.TimeFrom).TotalHours);
+
+            return totalHours;
         }
     }
 }

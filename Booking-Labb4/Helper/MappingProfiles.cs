@@ -18,7 +18,14 @@ namespace Booking_Labb4.Helper
             CreateMap<Appointment, AppointmentDto>();
             CreateMap<Appointment,CompanyAppointmentDto>()
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Customer.FirstName));
-            
+            CreateMap<Appointment, CustomerBookingDTO>()
+                .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Company.CompanyName))
+                .ForMember(dest => dest.CompanyPhoneNumber, opt => opt.MapFrom(src => src.Company.PhoneNumber))
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Customer.FirstName))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Customer.LastName))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Customer.Address));
+
+
         }
     }
 }
