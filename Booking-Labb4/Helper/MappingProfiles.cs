@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Booking_Labb4.Data.Dto;
 using BookingModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace Booking_Labb4.Helper
 {
@@ -24,6 +25,10 @@ namespace Booking_Labb4.Helper
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Customer.FirstName))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Customer.LastName))
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Customer.Address));
+            CreateMap<Appointment, AppointmentHistoryDto>();
+                //.ForMember(dest => dest.PeriodStart, opt => opt.MapFrom(src => EF.Property<DateTime>(src, "PeriodStart")))
+                //.ForMember(dest => dest.PeriodEnd, opt => opt.MapFrom(src => EF.Property<DateTime>(src, "PeriodEnd")));
+            //CreateMap<AppointmentHistoryDto,Appointment>();
 
 
         }

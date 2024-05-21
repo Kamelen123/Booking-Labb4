@@ -130,5 +130,22 @@ namespace Booking_Labb4.Controllers
                     "Error Occurred when Trying to Update data in Database...");
             }
         }
+        [HttpGet("GetAppointmentChanges/{appointmentId}")]
+        public async Task<IActionResult> GetAppointmentChanges(int appointmentId)
+        {
+            try
+            {
+                var appointmentChanges = await _appointment.GetAppointmentChanges(appointmentId);
+                if (appointmentChanges == null || !appointmentChanges.Any())
+                {
+                    return NotFound($"No changes found for appointment with ID {appointmentId}");
+                }
+                return Ok(appointmentChanges);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving changes from the database.");
+            }
+        }
     }
 }
