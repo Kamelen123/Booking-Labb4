@@ -13,11 +13,14 @@ namespace Booking_Labb4.Controllers
     {
         private ICustomer _customer;
         private readonly IMapper _mapper;
+        private IAppointment _appointment;
 
-        public CustomerController(IMapper mapper, ICustomer customer)
+        public CustomerController(IMapper mapper, ICustomer customer, IAppointment appointment)
         {
             _customer = customer;
             _mapper = mapper;
+            _appointment = appointment;
+
         }
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAllCustomers()
@@ -180,6 +183,25 @@ namespace Booking_Labb4.Controllers
             }
 
             return Ok(customer);
+        }
+        [HttpDelete("DeleteAppointment/{customerId:int}")]
+        public async Task<ActionResult<Appointment>> DeleteCustomer([FromRoute] int customerId, [FromQuery] int appoinmentId)
+        {
+            try
+            {
+                var deleteAppointment = await _customer.DeletCustomerAppointment(customerId, appoinmentId);
+                if (deleteAppointment == null)
+                {
+                    return NotFound($"Appointment with Customer ID {customerId} and or Appointment ID {appoinmentId} not found");
+                }
+                return await _appointment.Delete(appoinmentId);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                     "Error When trying to Delete Data from Database.......");
+            }
+
         }
     }
 }

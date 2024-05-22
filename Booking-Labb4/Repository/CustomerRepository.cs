@@ -116,5 +116,17 @@ namespace Booking_Labb4.Repository
 
             return totalHours;
         }
+
+        public async Task<Appointment> DeletCustomerAppointment(int customerId, int appointmentId)
+        {
+            var appointmentToDelete = await _appDbContext.Appointments.FirstOrDefaultAsync(a => a.CustomerId == customerId && a.AppointmentId == appointmentId);
+            if (appointmentToDelete != null)
+            {
+                _appDbContext.Appointments.Remove(appointmentToDelete);
+                await _appDbContext.SaveChangesAsync();
+                return appointmentToDelete;
+            }
+            return null;
+        }
     }
 }

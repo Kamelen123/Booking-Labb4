@@ -135,7 +135,7 @@ namespace Booking_Labb4.Controllers
         {
             try
             {
-                var appointmentChanges = await _appointment.GetAppointmentChanges(appointmentId);
+                var appointmentChanges = await _appointment.GetAppointmentChanges(/*appointmentId*/);
                 if (appointmentChanges == null || !appointmentChanges.Any())
                 {
                     return NotFound($"No changes found for appointment with ID {appointmentId}");

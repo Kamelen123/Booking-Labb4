@@ -71,11 +71,12 @@ namespace Booking_Labb4.Repository
                 .Where(a => a.Date.Year == year && a.Date.Month == month)
                 .ToListAsync();
         }
-        public async Task<IEnumerable<AppointmentHistoryDto>> GetAppointmentChanges(int appointmentId)
+        public async Task<IEnumerable<AppointmentHistoryDto>> GetAppointmentChanges(/*int appointmentId*/)
         {
-            var history = await _appDbContext.Appointments
+            var history = await _appDbContext
+                .Appointments
                 .TemporalAll()
-                .Where(a => a.AppointmentId == appointmentId)
+                //.Where(a => a.AppointmentId == appointmentId)
                 .OrderBy(a => EF.Property<DateTime>(a, "PeriodStart"))
                 .ToListAsync();
 

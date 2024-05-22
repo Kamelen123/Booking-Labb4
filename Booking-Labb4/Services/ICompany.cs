@@ -9,5 +9,6 @@ namespace Booking_Labb4.Services
         Task<IEnumerable<Appointment>> SearchByCompanyIdAndMonth(int companyId, int year, int month);
 
         Task<IEnumerable<CompanyAppointmentDto>> Test(int companyId, int year, int month);
+        Task<Appointment> DeletCompenyAppointment(int companyId, int appointmentId);
     }
 }
