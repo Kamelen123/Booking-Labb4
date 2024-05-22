@@ -82,5 +82,6 @@ namespace Booking_Labb4.Repository
 
             return _mapper.Map<List<AppointmentHistoryDto>>(history);
         }
+
     }
 }

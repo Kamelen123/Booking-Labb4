@@ -9,6 +9,6 @@ namespace Booking_Labb4.Services
         Task<IEnumerable<CustomerBookingDTO>> CustomerAppointmentInfo(int customerId);
         Task<IEnumerable<CustomerBookingDTO>> SearchByMonth(int year, int month);
         Task<double> GetCustomerHours(int customerId, int year, int month);
-        Task <Appointment> DeletCustomerAppointment(int customerId, int appointmentId);
+        Task <Appointment> DeleteCustomerAppointment(int customerId, int appointmentId);
     }
 }

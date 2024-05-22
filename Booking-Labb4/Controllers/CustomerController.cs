@@ -185,11 +185,11 @@ namespace Booking_Labb4.Controllers
             return Ok(customer);
         }
         [HttpDelete("DeleteAppointment/{customerId:int}")]
-        public async Task<ActionResult<Appointment>> DeleteCustomer([FromRoute] int customerId, [FromQuery] int appoinmentId)
+        public async Task<ActionResult<Appointment>> DeleteCustomerAppointment([FromRoute] int customerId, [FromQuery] int appoinmentId)
         {
             try
             {
-                var deleteAppointment = await _customer.DeletCustomerAppointment(customerId, appoinmentId);
+                var deleteAppointment = await _customer.DeleteCustomerAppointment(customerId, appoinmentId);
                 if (deleteAppointment == null)
                 {
                     return NotFound($"Appointment with Customer ID {customerId} and or Appointment ID {appoinmentId} not found");

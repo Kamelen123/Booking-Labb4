@@ -16,11 +16,13 @@ namespace Booking_Labb4.Controllers
     {
         private ICompany _company;
         private readonly IMapper _mapper;
+        private IAppointment _appointment;
 
-        public CompanyController(ICompany company, IMapper mapper)
+        public CompanyController(ICompany company, IMapper mapper, IAppointment appointment)
         {
             _company = company;
             _mapper = mapper;
+            _appointment = appointment;
         }
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAllCompanies()
@@ -82,7 +84,7 @@ namespace Booking_Labb4.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error posting data to the database.");
             }
         }
-        [HttpDelete("{id:int}")]
+        [HttpDelete("DeleteCompany/{id:int}")]
         public async Task<ActionResult<Company>> DeleteCompany(int id)
         {
             try
@@ -101,7 +103,7 @@ namespace Booking_Labb4.Controllers
             }
 
         }
-        [HttpPut("{id:int}")]
+        [HttpPut("UpdateCompany/{id:int}")]
         public async Task<ActionResult<CompanyDto>> UpdateCompany(int id, CompanyDto companyDto)
         {
             try
@@ -166,6 +168,25 @@ namespace Booking_Labb4.Controllers
             }
 
             return Ok(appointmentDtos);
+        }
+        [HttpDelete("DeleteComapnyAppointment/{companyId:int}")]
+        public async Task<ActionResult<Appointment>> DeleteCompanyAppointment([FromRoute] int companyId, [FromQuery] int appoinmentId)
+        {
+            try
+            {
+                var deleteAppointment = await _company.DeleteCompanyAppointment(companyId, appoinmentId);
+                if (deleteAppointment == null)
+                {
+                    return NotFound($"Appointment with Company ID {companyId} and or Appointment ID {appoinmentId} not found");
+                }
+                return await _appointment.Delete(appoinmentId);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                     "Error When trying to Delete Data from Database.......");
+            }
+
         }
     }
 }

@@ -63,7 +63,7 @@ namespace Booking_Labb4.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
-        [HttpDelete("{id:int}")]
+        [HttpDelete("DeleteAppointment/{id:int}")]
         public async Task<ActionResult<Appointment>> DeleteAppointment(int id)
         {
             try
@@ -98,7 +98,7 @@ namespace Booking_Labb4.Controllers
                    "Error to get Data from Database.......");
             }
         }
-        [HttpPut("{id:int}")]
+        [HttpPut("UpdateAppointment/{id:int}")]
         public async Task<ActionResult<AppointmentDto>> UpdateAppointment(int id, AppointmentDto appointmentDto)
         {
             try
@@ -130,15 +130,15 @@ namespace Booking_Labb4.Controllers
                     "Error Occurred when Trying to Update data in Database...");
             }
         }
-        [HttpGet("GetAppointmentChanges/{appointmentId}")]
-        public async Task<IActionResult> GetAppointmentChanges(int appointmentId)
+        [HttpGet("GetAppointmentChanges")]
+        public async Task<IActionResult> GetAppointmentChanges()
         {
             try
             {
                 var appointmentChanges = await _appointment.GetAppointmentChanges(/*appointmentId*/);
                 if (appointmentChanges == null || !appointmentChanges.Any())
                 {
-                    return NotFound($"No changes found for appointment with ID {appointmentId}");
+                    return NotFound($"No changes found for appointments");
                 }
                 return Ok(appointmentChanges);
             }
