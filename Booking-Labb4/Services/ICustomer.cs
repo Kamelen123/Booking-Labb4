@@ -11,5 +11,6 @@ namespace Booking_Labb4.Services
         Task<double> GetCustomerHours(int customerId, int year, int month);
         Task <Appointment> DeleteCustomerAppointment(int customerId, int appointmentId);
         Task<Appointment> AddCustomerAppointment(int customerid, Appointment newEntity);
+        Task<Appointment> UpdateCustomerAppointment(Appointment updatedEntity);
     }
 }

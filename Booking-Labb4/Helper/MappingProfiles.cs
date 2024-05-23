@@ -33,6 +33,8 @@ namespace Booking_Labb4.Helper
             CreateMap<AddCustomerAppointmentDto, Appointment>();
             CreateMap<Appointment, AddCompanyAppointmentDto>();
             CreateMap<AddCompanyAppointmentDto, Appointment>();
+            CreateMap<Appointment, UpdateCustomerAppointmentDto>();
+            CreateMap<UpdateCustomerAppointmentDto, Appointment>();
                 
 
 

@@ -20,13 +20,17 @@ namespace Booking_Labb4
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            //My What ever we call this
+            //My Controller, Parchal Update
+            builder.Services.AddControllers().AddNewtonsoftJson();
+            //Controller for DateOnly and TimeOnly 
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new DateOnlyConverter());
                 options.JsonSerializerOptions.Converters.Add(new TimeOnlyConverter());
             });
+            //AoutoMapper
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            //Repository
             builder.Services.AddScoped<ICompany, CompanyRepository>();
             builder.Services.AddScoped<ICustomer, CustomerRepository>();
             builder.Services.AddScoped<IAppointment, AppointmentRepository>();

@@ -3,6 +3,7 @@ using Booking_Labb4.Data.Dto;
 using Booking_Labb4.Services;
 using BookingModels;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Booking_Labb4.Controllers
@@ -240,6 +241,36 @@ namespace Booking_Labb4.Controllers
                 _logger.LogError(ex, "Error posting data to the database.");
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error posting data to the database.");
             }
+        }
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdateAppointment(int id, [FromBody] JsonPatchDocument<UpdateCustomerAppointmentDto> patchDoc)
+        {
+            if (patchDoc == null)
+            {
+                return BadRequest("Invalid patch document.");
+            }
+
+            var appointment = await _appointment.GetSingel(id);
+            if (appointment == null)
+            {
+                return NotFound("Appointment not found.");
+            }
+
+            var appointmentDto = _mapper.Map<UpdateCustomerAppointmentDto>(appointment);
+
+            patchDoc.ApplyTo(appointmentDto, ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Update the original appointment entity with the patched data
+            _mapper.Map(appointmentDto, appointment);
+
+            await _appointment.Update(appointment);
+
+            return NoContent();
         }
     }
 }
