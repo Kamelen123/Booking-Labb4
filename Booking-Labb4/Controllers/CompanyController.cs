@@ -17,12 +17,14 @@ namespace Booking_Labb4.Controllers
         private ICompany _company;
         private readonly IMapper _mapper;
         private IAppointment _appointment;
+        private readonly ILogger<CompanyController> _logger;
 
-        public CompanyController(ICompany company, IMapper mapper, IAppointment appointment)
+        public CompanyController(ICompany company, IMapper mapper, IAppointment appointment, ILogger<CompanyController> logger)
         {
             _company = company;
             _mapper = mapper;
             _appointment = appointment;
+            _logger = logger;
         }
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAllCompanies()
@@ -187,6 +189,42 @@ namespace Booking_Labb4.Controllers
                      "Error When trying to Delete Data from Database.......");
             }
 
+        }
+        [HttpPost("AddCompanyAppointment{companyId}")]
+        public async Task<ActionResult<AddCompanyAppointmentDto>> AddAnAppointment([FromRoute] int companyId, AddCompanyAppointmentDto newAddCompanyAppointmentDto)
+        {
+            try
+            {
+                if (newAddCompanyAppointmentDto == null)
+                {
+                    return BadRequest();
+                }
+
+                var newAppointment = _mapper.Map<Appointment>(newAddCompanyAppointmentDto);
+
+                var createdAppointment = await _company.AddCompanyAppointment(companyId, newAppointment);
+
+                var createdAppointmentDto = _mapper.Map<AddCompanyAppointmentDto>(createdAppointment);
+
+                //not working WHY?
+
+                //var url = Url.Action("GetAppointment", "Appointment", new Appointment { AppointmentId = createdAppointmentDto.AppointmentId });
+
+                //if (string.IsNullOrEmpty(url))
+                //{
+                //    return BadRequest("Unable to generate URL for the created appointment.");
+                //}
+
+                //return Created(url, createdAppointmentDto);
+                return Created(string.Empty, "Appointment created successfully.");
+
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError(ex, "Error posting data to the database.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error posting data to the database.");
+            }
         }
     }
 }

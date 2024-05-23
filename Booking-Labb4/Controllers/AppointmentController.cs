@@ -147,5 +147,6 @@ namespace Booking_Labb4.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving changes from the database.");
             }
         }
+        
     }
 }

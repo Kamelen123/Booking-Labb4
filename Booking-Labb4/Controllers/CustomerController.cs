@@ -14,12 +14,14 @@ namespace Booking_Labb4.Controllers
         private ICustomer _customer;
         private readonly IMapper _mapper;
         private IAppointment _appointment;
+        private readonly ILogger<CustomerController> _logger;
 
-        public CustomerController(IMapper mapper, ICustomer customer, IAppointment appointment)
+        public CustomerController(IMapper mapper, ICustomer customer, IAppointment appointment, ILogger<CustomerController> logger)
         {
             _customer = customer;
             _mapper = mapper;
             _appointment = appointment;
+            _logger = logger;
 
         }
         [HttpGet("GetAll")]
@@ -56,7 +58,7 @@ namespace Booking_Labb4.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
-        [HttpPost("AddCompany")]
+        [HttpPost("AddCustomer")]
         public async Task<ActionResult<AddCustomerDto>> AddCustomer(AddCustomerDto newCustomerDto)
         {
             try
@@ -202,6 +204,42 @@ namespace Booking_Labb4.Controllers
                      "Error When trying to Delete Data from Database.......");
             }
 
+        }
+        [HttpPost("AddCustomerAppointment{customerId}")]
+        public async Task<ActionResult<AddCustomerAppointmentDto>> AddAnAppointment([FromRoute] int customerId, AddCustomerAppointmentDto newAddCustomerAppointmentDto)
+        {
+            try
+            {
+                if (newAddCustomerAppointmentDto == null)
+                {
+                    return BadRequest();
+                }
+
+                var newAppointment = _mapper.Map<Appointment>(newAddCustomerAppointmentDto);
+
+                var createdAppointment = await _customer.AddCustomerAppointment(customerId, newAppointment);
+
+                var createdAppointmentDto = _mapper.Map<AddCustomerAppointmentDto>(createdAppointment);
+
+                //not working WHY?
+
+                //var url = Url.Action("GetAppointment", "Appointment", new Appointment { AppointmentId = createdAppointmentDto.AppointmentId });
+
+                //if (string.IsNullOrEmpty(url))
+                //{
+                //    return BadRequest("Unable to generate URL for the created appointment.");
+                //}
+
+                //return Created(url, createdAppointmentDto);
+                return Created(string.Empty, "Appointment created successfully.");
+
+            }
+            catch (Exception ex)
+            {
+                
+                _logger.LogError(ex, "Error posting data to the database.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error posting data to the database.");
+            }
         }
     }
 }

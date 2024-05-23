@@ -120,6 +120,14 @@ namespace Booking_Labb4.Repository
             }
             return null;
         }
+
+        public async Task<Appointment> AddCompanyAppointment(int customerid, Appointment newEntity)
+        {
+            newEntity.CustomerNotes ??= string.Empty;
+            var result = await _appDbContext.Appointments.AddAsync(newEntity);
+            await _appDbContext.SaveChangesAsync();
+            return result.Entity;
+        }
     }
     
 }
