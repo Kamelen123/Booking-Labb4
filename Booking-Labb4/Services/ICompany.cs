@@ -11,5 +11,6 @@ namespace Booking_Labb4.Services
         Task<IEnumerable<CompanyAppointmentDto>> Test(int companyId, int year, int month);
         Task<Appointment> DeleteCompanyAppointment(int companyId, int appointmentId);
         Task<Appointment> AddCompanyAppointment(int customerid, Appointment newEntity);
+        Task<Appointment> UpdateCompanyAppointment(Appointment updatedEntity);
     }
 }

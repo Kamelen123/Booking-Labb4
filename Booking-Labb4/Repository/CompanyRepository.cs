@@ -128,6 +128,13 @@ namespace Booking_Labb4.Repository
             await _appDbContext.SaveChangesAsync();
             return result.Entity;
         }
+
+        public async Task<Appointment> UpdateCompanyAppointment(Appointment updatedEntity)
+        {
+            _appDbContext.Appointments.Update(updatedEntity);
+            await _appDbContext.SaveChangesAsync();
+            return updatedEntity;
+        }
     }
     
 }
